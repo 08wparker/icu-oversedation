@@ -1,0 +1,18 @@
+# CLIF data processing
+clifpy
+
+# Data manipulation and analysis
+pandas
+numpy
+pyarrow  # For parquet file support
+
+# Data visualization
+plotnine
+
+# Machine learning and statistics
+scikit-learn  # For ML phenotyping
+
+# Optional: Uncomment if needed for your analysis
+# scipy  # For statistical analysis
+# jupyter  # For interactive analysis
+# ipython
