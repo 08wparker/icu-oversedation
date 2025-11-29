@@ -12,6 +12,9 @@ plotnine
 # Machine learning and statistics
 scikit-learn  # For ML phenotyping
 
+# Interactive notebooks
+marimo  # Reactive Python notebooks
+
 # Optional: Uncomment if needed for your analysis
 # scipy  # For statistical analysis
 # jupyter  # For interactive analysis

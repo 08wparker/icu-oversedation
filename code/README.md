@@ -21,6 +21,8 @@ python3 code/01_cohort_identification.py
 **Outputs** (saved to `output/`):
 - `cohort_ids_{site_name}.csv` - List of hospitalization_id meeting criteria
 - `cohort_summary_{site_name}.csv` - Summary with age, IMV timing, and duration
+- `cohort_imv_times_{site_name}.csv` - Hospitalization IDs with first IMV timestamp
+- `table_one_{site_name}.csv` - **Table One** with demographics, ventilator settings, vital signs, and SOFA scores
 - `cohort_hospitalization_{site_name}.csv` - Filtered hospitalization table
 - `cohort_respiratory_support_{site_name}.csv` - Filtered respiratory support table
 - `cohort_vitals_{site_name}.csv` - Filtered vitals table

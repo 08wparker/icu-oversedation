@@ -13,13 +13,12 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
 # Import config after adding parent to path
-from utils.config import config
+from utils import config
 
 # Access configuration parameters
 site_name = config['site_name']
 tables_path = config['tables_path']
 file_type = config['file_type']
-
 
 # Print the configuration parameters
 print(f"Site Name: {site_name}")
@@ -201,8 +200,133 @@ print(f"Cohort vitals records: {len(cohort_vitals)}")
 print(f"Cohort labs records: {len(cohort_labs)}")
 print(f"Cohort medication records: {len(cohort_medication_admin_continuous)}")
 
-# Step 6: Export cohort data
-print("\nStep 6: Exporting cohort data")
+# Step 6: Create Table One
+print("\nStep 6: Creating Table One - Cohort Characteristics")
+
+def summarize_continuous(series, var_name):
+    """Summarize continuous variable with mean, median, IQR"""
+    return {
+        'Variable': var_name,
+        'N': series.notna().sum(),
+        'Mean (SD)': f"{series.mean():.1f} ({series.std():.1f})",
+        'Median [IQR]': f"{series.median():.1f} [{series.quantile(0.25):.1f}, {series.quantile(0.75):.1f}]",
+        'Min, Max': f"{series.min():.1f}, {series.max():.1f}"
+    }
+
+def summarize_categorical(series, var_name):
+    """Summarize categorical variable with counts and percentages"""
+    total = series.notna().sum()
+    counts = series.value_counts()
+    results = []
+    for category, count in counts.items():
+        pct = (count / total) * 100
+        results.append({
+            'Variable': f"{var_name}: {category}",
+            'N': count,
+            'Percentage': f"{pct:.1f}%",
+            'Mean (SD)': '',
+            'Median [IQR]': ''
+        })
+    return results
+
+# Initialize table one
+table_one_data = []
+
+# Demographics
+print("  - Summarizing demographics...")
+table_one_data.append({'Variable': 'DEMOGRAPHICS', 'N': '', 'Mean (SD)': '', 'Median [IQR]': '', 'Min, Max': ''})
+table_one_data.append(summarize_continuous(cohort_hospitalization['age_at_admission'], 'Age (years)'))
+
+# Sex
+if 'sex_category' in cohort_hospitalization.columns:
+    table_one_data.extend(summarize_categorical(cohort_hospitalization['sex_category'], 'Sex'))
+
+# Race
+if 'race_category' in cohort_hospitalization.columns:
+    table_one_data.extend(summarize_categorical(cohort_hospitalization['race_category'], 'Race'))
+
+# Ethnicity
+if 'ethnicity_category' in cohort_hospitalization.columns:
+    table_one_data.extend(summarize_categorical(cohort_hospitalization['ethnicity_category'], 'Ethnicity'))
+
+# Clinical Characteristics
+table_one_data.append({'Variable': 'CLINICAL CHARACTERISTICS', 'N': '', 'Mean (SD)': '', 'Median [IQR]': '', 'Min, Max': ''})
+
+# IMV characteristics
+print("  - Summarizing IMV characteristics...")
+imv_data = cohort_summary.merge(
+    cohort_hospitalization[['hospitalization_id']],
+    on='hospitalization_id',
+    how='inner'
+)
+table_one_data.append(summarize_continuous(imv_data['imv_duration_hours'], 'IMV Duration (hours)'))
+
+# Ventilator settings - get first recorded values for each patient
+print("  - Summarizing ventilator settings...")
+first_vent_settings = cohort_respiratory_support.sort_values('recorded_dttm').groupby('hospitalization_id').first()
+
+if 'fio2_set' in first_vent_settings.columns:
+    table_one_data.append(summarize_continuous(first_vent_settings['fio2_set'], 'FiO2 (%) - Initial'))
+
+if 'peep_set' in first_vent_settings.columns:
+    table_one_data.append(summarize_continuous(first_vent_settings['peep_set'], 'PEEP (cmH2O) - Initial'))
+
+if 'resp_rate_set' in first_vent_settings.columns:
+    table_one_data.append(summarize_continuous(first_vent_settings['resp_rate_set'], 'Respiratory Rate (bpm) - Initial'))
+
+if 'tidal_volume_set' in first_vent_settings.columns:
+    table_one_data.append(summarize_continuous(first_vent_settings['tidal_volume_set'], 'Tidal Volume (mL) - Initial'))
+
+if 'mode_category' in first_vent_settings.columns:
+    table_one_data.extend(summarize_categorical(first_vent_settings['mode_category'], 'Ventilator Mode - Initial'))
+
+# SOFA scores - if available
+print("  - Checking for SOFA scores...")
+if 'sofa_total' in cohort_hospitalization.columns:
+    table_one_data.append(summarize_continuous(cohort_hospitalization['sofa_total'], 'SOFA Score - Total'))
+elif 'sofa_24hours' in cohort_hospitalization.columns:
+    table_one_data.append(summarize_continuous(cohort_hospitalization['sofa_24hours'], 'SOFA Score (24h)'))
+else:
+    print("    Note: SOFA scores not found in hospitalization table")
+
+# Vital signs - get first recorded values
+print("  - Summarizing vital signs...")
+first_vitals = cohort_vitals.sort_values('recorded_dttm').groupby('hospitalization_id').first()
+
+# Pivot vitals to get one row per patient
+if 'vital_category' in cohort_vitals.columns and 'vital_value' in cohort_vitals.columns:
+    vitals_pivot = cohort_vitals.pivot_table(
+        index='hospitalization_id',
+        columns='vital_category',
+        values='vital_value',
+        aggfunc='first'
+    )
+
+    vital_mappings = {
+        'heart_rate': 'Heart Rate (bpm)',
+        'sbp': 'Systolic BP (mmHg)',
+        'dbp': 'Diastolic BP (mmHg)',
+        'map': 'Mean Arterial Pressure (mmHg)',
+        'resp_rate': 'Respiratory Rate (bpm)',
+        'spo2': 'SpO2 (%)',
+        'temperature': 'Temperature (°C)'
+    }
+
+    for vital_cat, vital_name in vital_mappings.items():
+        if vital_cat in vitals_pivot.columns:
+            table_one_data.append(summarize_continuous(vitals_pivot[vital_cat], f'{vital_name} - Initial'))
+
+# Create DataFrame
+table_one = pd.DataFrame(table_one_data)
+
+# Fill NaN values with empty strings for display
+table_one = table_one.fillna('')
+
+print("\nTable One Preview:")
+print(table_one.to_string(index=False))
+
+# Step 7: Export cohort data
+print("\nStep 7: Exporting cohort data")
 output_dir = "output"
 os.makedirs(output_dir, exist_ok=True)
 
@@ -215,6 +339,10 @@ print(f"Saved: {output_dir}/cohort_ids_{site_name}.csv")
 cohort_summary.to_csv(f"{output_dir}/cohort_summary_{site_name}.csv", index=False)
 print(f"Saved: {output_dir}/cohort_summary_{site_name}.csv")
 
+# Export Table One
+table_one.to_csv(f"{output_dir}/table_one_{site_name}.csv", index=False)
+print(f"Saved: {output_dir}/table_one_{site_name}.csv")
+
 
 # Export hospitalization IDs and first ventilation time to a separate file
 cohort_imv_times = imv_24h[imv_24h['hospitalization_id'].isin(cohort_ids)][
@@ -223,8 +351,6 @@ cohort_imv_times = imv_24h[imv_24h['hospitalization_id'].isin(cohort_ids)][
 
 cohort_imv_times.to_csv(f"{output_dir}/cohort_imv_times_{site_name}.csv", index=False)
 print(f"Saved: {output_dir}/cohort_imv_times_{site_name}.csv")
-
-
 
 # Export filtered CLIF tables
 cohort_hospitalization.to_csv(f"{output_dir}/cohort_hospitalization_{site_name}.csv", index=False)

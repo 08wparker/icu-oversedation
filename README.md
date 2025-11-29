@@ -104,6 +104,7 @@ Follow instructions in the [config/README.md](config/README.md) file for detaile
 - **pandas, numpy, pyarrow**: Data manipulation and parquet file support
 - **plotnine**: Grammar of graphics visualization (ggplot2 for Python)
 - **scikit-learn**: Machine learning for longitudinal sedation phenotyping
+- **marimo**: Reactive Python notebooks for interactive data exploration
 
 **Preferred method using uv:**
 ```bash
@@ -128,6 +129,15 @@ pip install -r requirements.txt
 ## 3. Run code
 
 Detailed instructions on the code workflow are provided in the [code directory](code/README.md)
+
+## 4. Interactive exploration with marimo notebooks
+
+Explore your cohort data interactively using marimo notebooks:
+```bash
+marimo edit notebooks/cohort_exploration.py
+```
+
+See the [notebooks directory](notebooks/README.md) for more details on available notebooks and how to use marimo.
 
 ## Example CLIF Projects
 - [CLIF Adult Sepsis Events](https://github.com/08wparker/CLIF_sepsis) - R implementation

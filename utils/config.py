@@ -17,10 +17,11 @@ def load_config():
 # Load the configuration
 config = load_config()
 
+
 def convert_weight_based_doses(med_df: pd.DataFrame, weights_df: pd.DataFrame) -> pd.DataFrame:
     """
     Convert weight-based doses (e.g., mcg/kg/min, mg/kg/min) to absolute doses.
-    
+
     Parameters:
         med_df (pd.DataFrame): Medication DataFrame with med_dose and med_dose_unit
         weights_df (pd.DataFrame): DataFrame with hospitalization_id and weight_kg

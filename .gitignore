@@ -44,7 +44,15 @@ __pycache__/
 *.pyo
 .pytest_cache/
 uv.lock
+.marimo.cache/
 
 # ignore output cohort data files (site-specific)
 output/cohort_*.csv
 output/cohort_*.parquet
+output/table_one_*.csv
+
+# ignore screenshots and temporary files
+error_screenshots/
+*.png
+*.jpg
+*.jpeg
