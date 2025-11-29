@@ -1,46 +1,68 @@
  ## Code directory
 
-Update this README with the specific project workflow instructions.
-This directory contains scripts for the project workflow. The general workflow consists of three main steps: cohort identification, quality control, and analysis. Scripts can be implemented in R or Python, depending on project requirements. Please note that this workflow is just a suggestion, and you may change the structure to suit your project needs.
+This directory contains scripts for the ICU oversedation project workflow. The workflow consists of three main steps: cohort identification, quality control, and analysis.
 
-### General Workflow
+### Project Workflow
 
-1. Run the cohort_identification script
-   This script should:
-   - Apply inclusion and exclusion criteria
-   - Select required fields from each table
-   - Filter tables to include only required observations
+## 1. Cohort Identification (`01_cohort_identification.py`)
 
-   Expected outputs:
-   - cohort_ids: a list of unique identifiers for the study cohort
-   - cohort_data: the filtered study cohort data
-   - cohort_summary: a summary table describing the study cohort
+**Purpose**: Identify adult patients who received invasive mechanical ventilation (IMV) for ≥24 hours
 
-   Examples of cohort identification scripts:
-   - [`code/templates/Python/01_cohort_identification_template.py`](templates/Python/01_cohort_identification_template.py)
-   - [`code/templates/R/01_cohort_identification_template.R`](templates/R/01_cohort_identification_template.R)
+**Inclusion criteria**:
+- Adults (≥18 years old)
+- Invasive mechanical ventilation for ≥24 hours
 
-2. Run the quality_control script
-   This script should:
-   - Perform project-specific quality control checks on the filtered cohort data
-   - Handle outliers using predefined thresholds as given in `outlier-thresholds` directory. 
-   - Clean and preprocess the data for analysis
+**How to run**:
+```bash
+cd /path/to/icu-oversedation
+python3 code/01_cohort_identification.py
+```
 
-   Script: [`code/templates/R/02_project_quality_checks_template.R`](templates/R/02_project_quality_checks_template.R) & [`code/templates/R/03_outlier_handling_template.R`](templates/R/03_outlier_handling_template.R) 
+**Outputs** (saved to `output/`):
+- `cohort_ids_{site_name}.csv` - List of hospitalization_id meeting criteria
+- `cohort_summary_{site_name}.csv` - Summary with age, IMV timing, and duration
+- `cohort_hospitalization_{site_name}.csv` - Filtered hospitalization table
+- `cohort_respiratory_support_{site_name}.csv` - Filtered respiratory support table
+- `cohort_vitals_{site_name}.csv` - Filtered vitals table
+- `cohort_labs_{site_name}.csv` - Filtered labs table
+- `cohort_medication_admin_continuous_{site_name}.csv` - Filtered medication table
 
-   Input: cohort_data 
+**Configuration**:
+Edit the following parameters in the script if needed:
+- `start_date` / `end_date` - Optional date range filter
+- `min_imv_hours` - Minimum IMV duration (default: 24 hours)
+- IMV detection pattern (line 129-133) - Adjust keywords based on your data's `device_category` values
 
-   Output: cleaned_cohort_data 
+## 2. Quality Control (Coming Soon)
 
-3. Run the analysis script(s)
-   This script (or set of scripts) should contain the main analysis code for the project.
-   It may be broken down into multiple scripts if necessary.
-   
-   Script: [`code/templates/R/04_project_analysis_template.R`](templates/R/04_project_analysis_template.R) 
+**Purpose**: Perform data quality checks and outlier handling
 
-   Input: cleaned_cohort_data 
+**Tasks**:
+- Project-specific quality control checks on filtered cohort data
+- Handle outliers in vitals, labs, and respiratory support data
+- Clean and preprocess data for analysis
 
-   Output: [List of expected result files, e.g., statistical_results, figures, tables saved in the [`output/final`](../output/README.md) directory] 
+**Input**: Cohort data from step 1
+**Output**: `cleaned_cohort_data`
+
+## 3. Analysis (Coming Soon)
+
+**Purpose**: Main statistical analysis and ML phenotyping
+
+**Tasks**:
+- Identify deep sedation episodes (RASS < -3 + continuous sedative/analgesic infusion)
+- Characterize sedation patterns over time
+- Unsupervised/self-supervised ML phenotyping of longitudinal sedation patterns
+- Statistical analysis of risk factors
+
+**Input**: Cleaned cohort data from step 2
+**Output**: Results, figures, and tables saved to [`output/final/`](../output/README.md)
+
+---
+
+## Templates
+
+Python templates are available in [`templates/Python/`](templates/Python/) for reference. 
 
 
 

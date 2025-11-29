@@ -107,9 +107,16 @@ Follow instructions in the [config/README.md](config/README.md) file for detaile
 
 **Preferred method using uv:**
 ```bash
+# Create virtual environment
+uv venv
+
+# Activate the environment
+source .venv/bin/activate
+
+# Install dependencies
 uv pip install -r requirements.txt
 ```
-Note: uv automatically creates virtual environments and manages dependencies. It generates required files like `uv.lock` for reproducible builds. For more details, see the [CLIF uv guide by Zewei Whiskey Liao](https://github.com/Common-Longitudinal-ICU-data-Format/CLIF-data-huddles/blob/main/notes/uv-and-conv-commits.md).
+Note: uv automatically manages dependencies and generates required files like `uv.lock` for reproducible builds. For more details, see the [CLIF uv guide by Zewei Whiskey Liao](https://github.com/Common-Longitudinal-ICU-data-Format/CLIF-data-huddles/blob/main/notes/uv-and-conv-commits.md).
 
 **Alternative method using python3:**
 ```bash

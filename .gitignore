@@ -36,3 +36,15 @@ initialize_renv.R
 *.html
 
 temp*
+
+# Python specific
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+uv.lock
+
+# ignore output cohort data files (site-specific)
+output/cohort_*.csv
+output/cohort_*.parquet

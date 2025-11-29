@@ -6,14 +6,15 @@ import numpy as np
 from datetime import datetime
 import pyarrow.parquet as pq
 import time
-from utils import config
 
 # Add the parent directory of the current script to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
-# Use the imported config
+# Import config after adding parent to path
+from utils.config import config
+
 # Access configuration parameters
 site_name = config['site_name']
 tables_path = config['tables_path']
@@ -44,7 +45,7 @@ start_date = None  # "2020-01-01" or None for no date filter
 end_date = None    # "2021-12-31" or None for no date filter
 
 ## Minimum IMV duration in hours
-min_imv_hours = 24
+min_imv_hours = 4
 
 ## Confirm that these are the correct paths
 adt_filepath = f"{tables_path}/clif_adt.{file_type}"
@@ -65,7 +66,7 @@ def read_data(filepath, filetype):
         DataFrame: DataFrame containing the data.
     """
     start_time = time.time()  # Record the start time
-    file_name = os.path.basename(filepath) 
+    file_name = os.path.basename(filepath)
     if filetype == 'csv':
         df = pd.read_csv(filepath)
     elif filetype == 'parquet':
@@ -73,16 +74,16 @@ def read_data(filepath, filetype):
         df = table.to_pandas()
     else:
         raise ValueError("Unsupported file type. Please provide either 'csv' or 'parquet'.")
-    
+
     end_time = time.time()  # Record the end time
     load_time = end_time - start_time  # Calculate the loading time
-    
+
     # Calculate the size of the loaded dataset in MB
     dataset_size_mb = df.memory_usage(deep=True).sum() / (1024 * 1024)
     print(f"File name: {file_name}")
     print(f"Time taken to load the dataset: {load_time:.2f} seconds")
     print(f"Size of the loaded dataset: {dataset_size_mb:.2f} MB\n")
-    
+
     return df
 
 
@@ -127,7 +128,7 @@ clif_respiratory_support['recorded_dttm'] = pd.to_datetime(clif_respiratory_supp
 # You may need to adjust this based on your data's specific values
 imv_records = clif_respiratory_support[
     clif_respiratory_support['device_category'].str.contains(
-        'invasive|ventilator|endotracheal|ett',
+        'IMV',
         case=False,
         na=False
     )
@@ -213,6 +214,17 @@ print(f"Saved: {output_dir}/cohort_ids_{site_name}.csv")
 # Export cohort summary
 cohort_summary.to_csv(f"{output_dir}/cohort_summary_{site_name}.csv", index=False)
 print(f"Saved: {output_dir}/cohort_summary_{site_name}.csv")
+
+
+# Export hospitalization IDs and first ventilation time to a separate file
+cohort_imv_times = imv_24h[imv_24h['hospitalization_id'].isin(cohort_ids)][
+    ['hospitalization_id', 'first_imv']
+]
+
+cohort_imv_times.to_csv(f"{output_dir}/cohort_imv_times_{site_name}.csv", index=False)
+print(f"Saved: {output_dir}/cohort_imv_times_{site_name}.csv")
+
+
 
 # Export filtered CLIF tables
 cohort_hospitalization.to_csv(f"{output_dir}/cohort_hospitalization_{site_name}.csv", index=False)
