@@ -8,6 +8,7 @@ pyarrow  # For parquet file support
 
 # Data visualization
 plotnine
+plotly  # For interactive visualizations
 
 # Machine learning and statistics
 scikit-learn  # For ML phenotyping

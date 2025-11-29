@@ -14,15 +14,5 @@ def load_config():
                                 "Please create config.json based on the config_template.")
     
     return config
-
-
-
-def load_table(table_name, data_folder="CLIF-MIMIC/Release 1.0.0 (MIMIC-IV 3.1 - CLIF 2.1.0)"):
-    file_path = os.path.join(data_folder, table_name)
-    return pd.read_parquet(file_path)
-
-def standardize_dosage(df, )
-    
-if __name__ =="__main__":
-    # Load the configuration
-    config = load_config()
+# Load the configuration
+config = load_config()
