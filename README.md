@@ -34,7 +34,20 @@ Adults (>= 18 years old) treated with invasive mechanical ventilation for > 24 h
 
 #### Analgesic and sedative medication list
 
-* Both continuous infusions from `med_admin_continuous` and bolus doses from `med_admin_intermittent` in `med_group` == "sedation"
+* Both continuous infusions from `med_admin_continuous` and bolus doses from `med_admin_intermittent`
+
+| med_category     | description                                               | med_name_examples                                                                                     | med_group |
+|------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------|-----------|
+| dexmedetomidine  | Alpha-2 agonist sedative                                  | DEXMEDETOMIDINE 200 MCG/50 ML IV INFUSION, DEXMEDETOMIDINE 0.2-1.5 MCG/KG/HR IV                       | sedation  |
+| fentanyl         | Opioid analgesic                                          | FENTANYL 2500 MCG/50 ML IV INFUSION, FENTANYL 25-200 MCG/HR IV                                        | sedation  |
+| hydromorphone    | Opioid analgesic                                          | HYDROMORPHONE 50 MG/50 ML IV INFUSION, HYDROMORPHONE 0.5-3 MG/HR IV PCA                               | sedation  |
+| ketamine         | Dissociative anesthetic for sedation and analgesia        | KETAMINE 500 MG/50 ML IV INFUSION, KETAMINE 0.1-0.5 MG/KG/HR IV                                       | sedation  |
+| lorazepam        | Benzodiazepine for anxiety and sedation                   | LORAZEPAM 50 MG/50 ML IV INFUSION, LORAZEPAM 1-4 MG/HR IV                                             | sedation  |
+| midazolam        | Benzodiazepine for anxiety and sedation                   | MIDAZOLAM 100 MG/100 ML IV INFUSION, MIDAZOLAM 1-10 MG/HR IV                                          | sedation  |
+| morphine         | Opiate analgesic                                          | MORPHINE 100 MG/100 ML IV INFUSION, MORPHINE 1-5 MG/HR IV PCA                                         | sedation  |
+| pentobarbital    | Barbiturate for refractory intracranial hypertension      | PENTOBARBITAL 500 MG/250 ML IV INFUSION, PENTOBARBITAL 1-5 MG/KG/HR IV                                | sedation  |
+| propofol         | Sedative-hypnotic for anesthesia and sedation             | PROPOFOL 1000 MG/100 ML IV INFUSION, PROPOFOL 5-50 MCG/KG/MIN IV                                      | sedation  |
+| remifentanil     | Ultra-short acting opioid analgesic                       | REMIFENTANIL 5 MG/100 ML IV INFUSION, REMIFENTANIL 0.05-2 MCG/KG/MIN IV                               | sedation  |
 
 
 
